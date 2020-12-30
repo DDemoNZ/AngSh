@@ -1,10 +1,13 @@
 package sh.demo.services;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import sh.demo.models.SignupRequest;
+import sh.demo.models.dto.AuthResponseDto;
 import sh.demo.models.dto.User;
 import sh.demo.repository.UserJpa;
-import sh.demo.models.dto.AuthResponseDto;
 
 import java.util.Optional;
 
@@ -12,34 +15,27 @@ import java.util.Optional;
 public class AuthService {
 
     private final UserJpa userJpa;
-    private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder encoder;
 
-    public AuthService(UserJpa userJpa, PasswordEncoder passwordEncoder) {
+    public AuthService(UserJpa userJpa, PasswordEncoder encoder) {
         this.userJpa = userJpa;
-        this.passwordEncoder = passwordEncoder;
+        this.encoder = encoder;
     }
 
-    public AuthResponseDto login(User user) {
-        Optional<User> byUsername = userJpa.findByUsername(user.getUsername());
-        AuthResponseDto authResponseDto = new AuthResponseDto();
-        if (byUsername.isPresent()
-                && byUsername.get().getUsername().equals(user.getUsername())
-                && byUsername.get().getPassword().equals(/*passwordEncoder.encode(*/user.getPassword()))/*)*/ {
-            authResponseDto.setUser(byUsername.get());
-        } else {
-            authResponseDto.setException("No such user");
-        }
-        return authResponseDto;
+    public User registration(SignupRequest signupRequest) {
+        User user = new User();
+        user.setRole("USER");
+        user.setUsername(signupRequest.getUsername());
+        user.setPassword(encoder.encode(signupRequest.getPassword()));
+        user.setId(userJpa.save(user).getId());
+
+        return user;
     }
 
-    public AuthResponseDto registration(User user) {
-        AuthResponseDto authResponseDto = new AuthResponseDto();
-        if (userJpa.findByUsername(user.getUsername()).isPresent()) {
-            authResponseDto.setException("Username is already in use.");
-        } else {
-            User save = userJpa.save(user);
-            authResponseDto.setUser(save);
+    public void checkIfNotExist(SignupRequest signupRequest) throws Exception {
+        Optional<User> byUsername = userJpa.findByUsername(signupRequest.getUsername());
+        if (byUsername.isPresent()) {
+            throw new Exception("Error: Username is already taken.");
         }
-        return authResponseDto;
     }
 }

@@ -20,6 +20,7 @@ public class Item {
     @Column(unique = true)
     private String title;
     private Long price;
+    private String imageUrl;
 
     public Long getId() {
         return id;
@@ -43,5 +44,9 @@ public class Item {
 
     public void setPrice(Long price) {
         this.price = price;
+    }
+
+    public void setImage(String image) {
+
     }
 }
