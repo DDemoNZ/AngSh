@@ -8,9 +8,6 @@ import sh.demo.repository.ItemJpa;
 
 import org.springframework.data.domain.Pageable;
 
-import java.util.Collection;
-import java.util.List;
-
 @Service
 public class ItemServiceImpl implements ItemService {
 
@@ -30,8 +27,8 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Collection<Item> getAllItems(Pageable pageable) {
-        List<Item> content = itemJpa.findAll(pageable).getContent();
+    public Page<Item> getAllItems(Pageable pageable) {
+        Page<Item> content = itemJpa.findAll(pageable);
         return content;
     }
 }
