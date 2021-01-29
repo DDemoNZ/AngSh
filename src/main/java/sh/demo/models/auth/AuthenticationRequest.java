@@ -1,4 +1,4 @@
-package sh.demo.models.dto;
+package sh.demo.models.auth;
 
 import lombok.Data;
 
@@ -11,5 +11,4 @@ public class AuthenticationRequest {
     private String username;
     @NotBlank
     private String password;
-
 }

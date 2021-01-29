@@ -4,13 +4,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import sh.demo.models.dto.User;
+import sh.demo.models.User;
 import sh.demo.repository.UserJpa;
+import sh.demo.security.UserDetailsImpl;
 
 import javax.transaction.Transactional;
 
 @Service
-public class UserServiceImpl implements UserDetailsService {
+public class UserServiceImpl implements UserDetailsService, UserService {
 
     private final UserJpa userJpa;
 

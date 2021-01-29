@@ -1,20 +1,20 @@
 package sh.demo.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import sh.demo.models.JwtResponse;
-import sh.demo.models.SignupRequest;
-import sh.demo.models.dto.AuthenticationRequest;
+import sh.demo.models.auth.JwtResponse;
+import sh.demo.models.auth.SignupRequest;
+import sh.demo.models.auth.AuthenticationRequest;
+import sh.demo.models.User;
 import sh.demo.repository.UserJpa;
-import sh.demo.models.dto.User;
 import sh.demo.security.JwtUtil;
-import sh.demo.service.UserDetailsImpl;
+import sh.demo.security.UserDetailsImpl;
 import sh.demo.services.AuthService;
 
 import javax.annotation.PostConstruct;
@@ -28,17 +28,17 @@ import java.util.stream.Collectors;
 public class AccountController {
 
     private final UserJpa userJpa;
-    private final ObjectMapper objectMapper;
     private final AuthService authService;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
+    private final PasswordEncoder encoder;
 
-    public AccountController(UserJpa userJpa, ObjectMapper objectMapper, AuthService authService, AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
+    public AccountController(UserJpa userJpa, AuthService authService, AuthenticationManager authenticationManager, JwtUtil jwtUtil, PasswordEncoder encoder) {
         this.userJpa = userJpa;
-        this.objectMapper = objectMapper;
         this.authService = authService;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
+        this.encoder = encoder;
     }
 
     @PostConstruct
@@ -46,7 +46,7 @@ public class AccountController {
         User admin = new User();
         admin.setFirst_name("admin");
         admin.setRole("ADMIN");
-        admin.setPassword("admin");
+        admin.setPassword(encoder.encode("admin"));
         admin.setUsername("admin");
 
         userJpa.save(admin);
@@ -62,18 +62,15 @@ public class AccountController {
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authenticate.getPrincipal();
         List<String> roles = userDetails.getAuthorities().stream()
-                                                         .map(role -> role.getAuthority())
-                                                        .collect(Collectors.toList());
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
 
         return ResponseEntity.ok(new JwtResponse(generatedJwtToken,
-                                                 userDetails.getId(),
-                                                 userDetails.getUsername(),
-                                                 userDetails.getPassword(),
-                                                 roles));
+                userDetails.getId(),
+                userDetails.getUsername(),
+                userDetails.getPassword(),
+                roles));
     }
-//
-//    @GetMapping("/")
-//    public String test(@Auth)
 
     @PostMapping("/registration")
     public Object register(@RequestBody @Valid SignupRequest signupRequest) {
@@ -86,5 +83,4 @@ public class AccountController {
         User user = authService.registration(signupRequest);
         return ResponseEntity.ok().body("User registered successfully.");
     }
-
 }

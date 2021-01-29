@@ -1,12 +1,9 @@
 package sh.demo.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import sh.demo.models.SignupRequest;
-import sh.demo.models.dto.AuthResponseDto;
-import sh.demo.models.dto.User;
+import sh.demo.models.auth.SignupRequest;
+import sh.demo.models.User;
 import sh.demo.repository.UserJpa;
 
 import java.util.Optional;
@@ -35,7 +32,7 @@ public class AuthService {
     public void checkIfNotExist(SignupRequest signupRequest) throws Exception {
         Optional<User> byUsername = userJpa.findByUsername(signupRequest.getUsername());
         if (byUsername.isPresent()) {
-            throw new Exception("Error: Username is already taken.");
+            throw new Exception("Username is already taken.");
         }
     }
 }

@@ -1,4 +1,4 @@
-package sh.demo.models;
+package sh.demo.models.auth;
 
 import lombok.Data;
 
@@ -21,5 +21,4 @@ public class SignupRequest {
     @Email
     @Size(max = 40)
     private String email;
-
 }

@@ -1,12 +1,10 @@
-package sh.demo.models.dto;
+package sh.demo.models;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 @Entity
 @Data
@@ -17,10 +15,8 @@ public class Orders {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long price;
-//    @ManyToMany(fetch = FetchType.EAGER)
     @ManyToMany
     private Collection<Item> items = new ArrayList<>();
-//    @ManyToOne(fetch = FetchType.EAGER)
     @ManyToOne
     private User user;
 

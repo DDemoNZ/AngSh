@@ -2,8 +2,8 @@ package sh.demo.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import sh.demo.models.dto.Orders;
-import sh.demo.models.dto.User;
+import sh.demo.models.Orders;
+import sh.demo.models.User;
 
 import java.util.Collection;
 

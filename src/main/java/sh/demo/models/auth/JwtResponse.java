@@ -1,4 +1,4 @@
-package sh.demo.models;
+package sh.demo.models.auth;
 
 import lombok.Data;
 
@@ -20,5 +20,4 @@ public class JwtResponse {
         this.password = password;
         this.roles = roles;
     }
-
 }

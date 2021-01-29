@@ -1,10 +1,10 @@
 package sh.demo.service;
 
 import org.springframework.stereotype.Service;
-import sh.demo.models.dto.Item;
+import sh.demo.models.Item;
 import sh.demo.models.dto.OrderResponseDto;
-import sh.demo.models.dto.Orders;
-import sh.demo.models.dto.User;
+import sh.demo.models.Orders;
+import sh.demo.models.User;
 import sh.demo.repository.OrderJpa;
 import sh.demo.repository.UserJpa;
 

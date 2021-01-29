@@ -1,20 +1,19 @@
-package sh.demo.service;
+package sh.demo.security;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Service;
-import sh.demo.models.dto.User;
+import sh.demo.models.User;
 
 import java.util.Collection;
 import java.util.List;
 
 public class UserDetailsImpl implements UserDetails {
 
-    private Long id;
-    private String username;
-    private String password;
-    private Collection<? extends GrantedAuthority> authorities;
+    private final Long id;
+    private final String username;
+    private final String password;
+    private final Collection<? extends GrantedAuthority> authorities;
 
     public UserDetailsImpl(Long id, String username, String password, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;

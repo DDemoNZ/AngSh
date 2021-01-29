@@ -1,13 +1,11 @@
 package sh.demo.security;
 
+import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import org.springframework.security.core.Authentication;
-import sh.demo.service.UserDetailsImpl;
-
-import io.jsonwebtoken.*;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
