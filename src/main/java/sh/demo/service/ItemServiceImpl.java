@@ -2,10 +2,13 @@ package sh.demo.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import sh.demo.models.Item;
 import sh.demo.models.dto.ItemResponseDto;
 import sh.demo.repository.ItemJpa;
+
+import java.util.List;
 
 @Service
 public class ItemServiceImpl implements ItemService {
@@ -17,17 +20,19 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Object saveItem(Item item) {
-        if (itemJpa.findByTitle(item.getTitle()).isEmpty()) {
-            return new ItemResponseDto(itemJpa.save(item), null);
-        } else {
-            return new ItemResponseDto(null, "Item already exist");
-        }
+    public Item saveItem(Item item) {
+        return itemJpa.save(item);
     }
 
     @Override
     public Page<Item> getAllItems(Pageable pageable) {
+
         Page<Item> content = itemJpa.findAll(pageable);
         return content;
+    }
+
+    @Override
+    public List<Item> getAllItems() {
+        return itemJpa.findAll();
     }
 }

@@ -4,10 +4,5 @@
       "name": "jwtSecret",
       "type": "java.lang.String",
       "description": "Description for jwtSecret."
-    },
-    {
-      "name": "jwtSecret",
-      "type": "java.lang.String",
-      "description": "Description for jwtSecret."
     }
   ] }

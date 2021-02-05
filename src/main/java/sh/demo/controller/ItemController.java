@@ -2,6 +2,7 @@ package sh.demo.controller;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import sh.demo.models.Item;
 import sh.demo.service.ItemService;
@@ -37,8 +38,23 @@ public class ItemController {
     }
 
     @GetMapping(params = {"page", "size"})
-    public Page<Item> getAllItems(@RequestParam("page") int page, @RequestParam("size") int size) {
+    public Page<Item> getAllItems(@RequestParam("page") int page,
+                                  @RequestParam("size") int size) {
+
         Page<Item> itemPage = itemService.getAllItems(PageRequest.of(page, size));
+        if (page > itemPage.getTotalPages()) {
+            throw new NoSuchElementException("Last page");
+        }
+        return itemPage;
+    }
+
+    @GetMapping(params = {"page", "size", "sort", "order"})
+    public Page<Item> getAllItemsSortedBy(@RequestParam("page") int page,
+                                          @RequestParam("size") int size,
+                                          @RequestParam(value = "sort", defaultValue = "unsorted") String direction,
+                                          @RequestParam(value = "order", defaultValue = "id", required = false) String orderBy) {
+
+        Page<Item> itemPage = itemService.getAllItems(PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(direction), orderBy)));
         if (page > itemPage.getTotalPages()) {
             throw new NoSuchElementException("Last page");
         }

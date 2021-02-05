@@ -8,13 +8,14 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import sh.demo.models.auth.JwtResponse;
+import sh.demo.models.auth.AuthenticationResponse;
 import sh.demo.models.auth.SignupRequest;
 import sh.demo.models.auth.AuthenticationRequest;
 import sh.demo.models.User;
 import sh.demo.repository.UserJpa;
 import sh.demo.security.JwtUtil;
 import sh.demo.security.UserDetailsImpl;
+import sh.demo.service.UserService;
 import sh.demo.services.AuthService;
 
 import javax.annotation.PostConstruct;
@@ -27,14 +28,14 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "http://localhost:4200")
 public class AccountController {
 
-    private final UserJpa userJpa;
+    private final UserService userService;
     private final AuthService authService;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder encoder;
 
-    public AccountController(UserJpa userJpa, AuthService authService, AuthenticationManager authenticationManager, JwtUtil jwtUtil, PasswordEncoder encoder) {
-        this.userJpa = userJpa;
+    public AccountController(UserService userService, AuthService authService, AuthenticationManager authenticationManager, JwtUtil jwtUtil, PasswordEncoder encoder) {
+        this.userService = userService;
         this.authService = authService;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
@@ -49,7 +50,7 @@ public class AccountController {
         admin.setPassword(encoder.encode("admin"));
         admin.setUsername("admin");
 
-        userJpa.save(admin);
+        userService.save(admin);
     }
 
     @PostMapping("/login")
@@ -57,19 +58,8 @@ public class AccountController {
         Authentication authenticate = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
 
-        SecurityContextHolder.getContext().setAuthentication(authenticate);
-        String generatedJwtToken = jwtUtil.generateJwtToken(authenticate);
-
-        UserDetailsImpl userDetails = (UserDetailsImpl) authenticate.getPrincipal();
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(new JwtResponse(generatedJwtToken,
-                userDetails.getId(),
-                userDetails.getUsername(),
-                userDetails.getPassword(),
-                roles));
+        AuthenticationResponse authenticationResponse = getAuthenticationResponse(authenticate);
+        return ResponseEntity.ok(authenticationResponse);
     }
 
     @PostMapping("/registration")
@@ -82,5 +72,21 @@ public class AccountController {
 
         User user = authService.registration(signupRequest);
         return ResponseEntity.ok().body("User registered successfully.");
+    }
+
+    private AuthenticationResponse getAuthenticationResponse(Authentication authenticate) {
+        SecurityContextHolder.getContext().setAuthentication(authenticate);
+        String generatedJwtToken = jwtUtil.generateJwtToken(authenticate);
+
+        UserDetailsImpl userDetails = (UserDetailsImpl) authenticate.getPrincipal();
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
+
+        return new AuthenticationResponse(userDetails.getId(),
+                userDetails.getUsername(),
+                userDetails.getPassword(),
+                roles,
+                generatedJwtToken);
     }
 }

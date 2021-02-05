@@ -9,6 +9,7 @@ import sh.demo.repository.UserJpa;
 import sh.demo.security.UserDetailsImpl;
 
 import javax.transaction.Transactional;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserDetailsService, UserService {
@@ -26,5 +27,15 @@ public class UserServiceImpl implements UserDetailsService, UserService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         return UserDetailsImpl.build(user);
+    }
+
+    @Override
+    public Optional<User> findByUsername(String username) {
+        return userJpa.findByUsername(username);
+    }
+
+    @Override
+    public User save(User user) {
+        return userJpa.save(user);
     }
 }
